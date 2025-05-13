@@ -12,7 +12,6 @@ from backend.infrastructure.sqlalchemy.mixin import Schema
 
 
 class UserSchema(Base, Schema):
-
     __tablename__ = "user"
     name: Mapped[str] = mapped_column()
     """이름"""

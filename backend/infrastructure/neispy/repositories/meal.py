@@ -29,3 +29,13 @@ class NeispyMealRepository(MealRepository):
         row = info.mealServiceDietInfo[1].row
 
         return [NeispyMeal.from_neispy(meal) for meal in row]
+
+    async def create_meal_by_code(
+        self,
+        edu_office_code: str,
+        standard_school_code: str,
+        meal: Meal,
+    ) -> None:
+        raise NotImplementedError(
+            "Cannot create meal with NeispyMealRepository. Use SQLAlchemyMealRepository instead."
+        )
