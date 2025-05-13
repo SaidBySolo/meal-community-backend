@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.domain.entities.school_info import SchoolInfo
 from backend.infrastructure.sqlalchemy.base import Base
 from backend.infrastructure.sqlalchemy.mixin import Schema
+
+if TYPE_CHECKING:
+    from backend.infrastructure.sqlalchemy.entities.meal import MealSchema
 
 
 class SchoolInfoSchema(Base, Schema):
@@ -20,6 +25,13 @@ class SchoolInfoSchema(Base, Schema):
 
     edu_office_code: Mapped[str] = mapped_column()
     standard_school_code: Mapped[str] = mapped_column()
+
+    meals: Mapped[list[MealSchema]] = relationship(
+        "MealSchema",
+        cascade="all, delete",
+        passive_deletes=True,
+    )
+    """급식정보"""
 
     user_id: Mapped[int] = mapped_column(
         Integer,
@@ -45,4 +57,5 @@ class SchoolInfoSchema(Base, Schema):
             room=school_info.room,
             edu_office_code=school_info.edu_office_code,
             standard_school_code=school_info.standard_school_code,
+            meals=[],
         )

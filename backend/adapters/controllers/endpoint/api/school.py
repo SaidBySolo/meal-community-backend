@@ -12,7 +12,7 @@ school = Blueprint("school_endpoint", url_prefix="/school")
 @school.post("/search")
 @validate(json=SearchSchoolDTO, body_argument="search_school_dto")
 async def school_search(request: BackendRequest, search_school_dto: SearchSchoolDTO):
-    results = await GetSchoolByName(request.app.ctx.school_repository).execute(
+    results = await GetSchoolByName(request.app.ctx.neispy_school_repository).execute(
         search_school_dto.name
     )
 

@@ -12,6 +12,7 @@ from backend.infrastructure.neispy.repositories.meal import NeispyMealRepository
 from backend.infrastructure.neispy.repositories.school import NeispySchoolRepository
 from backend.infrastructure.sanic import Backend
 from backend.infrastructure.sqlalchemy import SQLAlchemy
+from backend.infrastructure.sqlalchemy.repositories.meal import SQLAlchemyMealRepository
 from backend.infrastructure.sqlalchemy.repositories.user import SQLAlchemyUserRepository
 from backend.infrastructure.valkey.entities.repositories.refresh_token import (
     ValkeyRefreshTokenRepository,
@@ -29,8 +30,9 @@ async def startup(app: Backend, loop: AbstractEventLoop) -> None:
     app.ctx.refresh_token_repository = ValkeyRefreshTokenRepository(
         app.ctx.valkey, app.config.REFRESH_TOKEN_EXP
     )
-    app.ctx.school_repository = NeispySchoolRepository(app.ctx.neispy)
-    app.ctx.meal_repository = NeispyMealRepository(app.ctx.neispy)
+    app.ctx.neispy_school_repository = NeispySchoolRepository(app.ctx.neispy)
+    app.ctx.neispy_meal_repository = NeispyMealRepository(app.ctx.neispy)
+    app.ctx.sa_meal_repository = SQLAlchemyMealRepository(app.ctx.sa)
 
     # Initialize External Services
     app.ctx.jwt_encode = partial(

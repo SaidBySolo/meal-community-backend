@@ -10,6 +10,7 @@ from backend.infrastructure.config import BackendConfig
 from backend.infrastructure.neispy.repositories.meal import NeispyMealRepository
 from backend.infrastructure.neispy.repositories.school import NeispySchoolRepository
 from backend.infrastructure.sqlalchemy import SQLAlchemy
+from backend.infrastructure.sqlalchemy.repositories.meal import SQLAlchemyMealRepository
 from backend.infrastructure.sqlalchemy.repositories.user import SQLAlchemyUserRepository
 from backend.infrastructure.valkey.entities.repositories.refresh_token import (
     ValkeyRefreshTokenRepository,
@@ -22,8 +23,9 @@ class BackendContext(SimpleNamespace):
     neispy: Neispy
     user_repository: SQLAlchemyUserRepository
     refresh_token_repository: ValkeyRefreshTokenRepository
-    school_repository: NeispySchoolRepository
-    meal_repository: NeispyMealRepository
+    neispy_school_repository: NeispySchoolRepository
+    neispy_meal_repository: NeispyMealRepository
+    sa_meal_repository: SQLAlchemyMealRepository
     jwt_encode: Callable[[dict[str, Any]], str]
     jwt_decode: Callable[[str], dict[str, Any]]
 
