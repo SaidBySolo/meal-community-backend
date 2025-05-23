@@ -1,5 +1,6 @@
 from backend.domain.entities.meal import Meal
 from backend.domain.repositories.meal import MealRepository
+from backend.infrastructure.enum import CreateMealStatus
 
 
 class CreateMealUseCase:
@@ -9,8 +10,14 @@ class CreateMealUseCase:
     async def execute(
         self, edu_office_code: str, standard_school_code: str, meal: Meal
     ) -> None:
-        return await self.meal_repository.create_meal_by_code(
+        result = await self.meal_repository.create(
             edu_office_code=edu_office_code,
             standard_school_code=standard_school_code,
             meal=meal,
         )
+
+        if result == CreateMealStatus.SCHOOL_INFO_NOT_FOUND:
+            # TODO: handle error
+            raise ValueError("School info not found")
+
+        return

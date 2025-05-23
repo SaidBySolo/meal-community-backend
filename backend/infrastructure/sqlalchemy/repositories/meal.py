@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from backend.domain.entities.meal import Meal
 from backend.domain.repositories.meal import MealRepository
+from backend.infrastructure.enum import CreateMealStatus
 from backend.infrastructure.sqlalchemy import SQLAlchemy
 from backend.infrastructure.sqlalchemy.entities.meal import MealSchema
 from backend.infrastructure.sqlalchemy.entities.school_info import SchoolInfoSchema
@@ -15,7 +16,7 @@ class SQLAlchemyMealRepository(MealRepository):
     def __init__(self, sa: SQLAlchemy):
         self.sa = sa
 
-    async def get_meal_by_code(
+    async def get_by_code(
         self, edu_office_code: str, standard_school_code: str, date: date
     ) -> list[Meal]:
         async with self.sa.session_maker() as session:
@@ -39,7 +40,7 @@ class SQLAlchemyMealRepository(MealRepository):
                     for meal in school_info.meals
                 ]
 
-    async def get_meal_id_by_code(
+    async def get_id_by_code(
         self,
         edu_office_code: str,
         standard_school_code: str,
@@ -48,46 +49,45 @@ class SQLAlchemyMealRepository(MealRepository):
     ) -> int | None:
         async with self.sa.session_maker() as session:
             async with session.begin():
-                result = await session.execute(
-                    select(SchoolInfoSchema).where(
+                school_info_subquery = (
+                    select(SchoolInfoSchema.id)
+                    .where(
                         SchoolInfoSchema.edu_office_code == edu_office_code,
                         SchoolInfoSchema.standard_school_code == standard_school_code,
                     )
+                    .scalar_subquery()
                 )
-                school_info = result.scalars().first()
-                assert school_info is not None
+
                 result = await session.execute(
-                    select(MealSchema).where(
-                        MealSchema.school_info_id == school_info.id,
+                    select(MealSchema.id).where(
+                        MealSchema.school_info_id == school_info_subquery,
                         MealSchema.date == date,
                         MealSchema.name == meal_name,
                     )
                 )
-                meal = result.scalars().first()
-                if meal is None:
-                    return None
-                return meal.id
+                return result.scalar_one_or_none()
 
-    async def create_meal_by_code(
+    async def create_by_code(
         self,
         edu_office_code: str,
         standard_school_code: str,
         meal: Meal,
-    ):
+    ) -> CreateMealStatus:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 result = await session.execute(
-                    select(SchoolInfoSchema).where(
+                    select(SchoolInfoSchema.id).where(
                         SchoolInfoSchema.edu_office_code == edu_office_code,
                         SchoolInfoSchema.standard_school_code == standard_school_code,
                     )
                 )
 
-                school_info = result.scalars().first()
-                assert school_info is not None
+                school_info_id = result.scalar_one_or_none()
+                if school_info_id is None:
+                    return CreateMealStatus.SCHOOL_INFO_NOT_FOUND
 
                 meal_schema = MealSchema(
-                    school_info_id=school_info.id,
+                    school_info_id=school_info_id,
                     name=meal.name,
                     dish_name=meal.dish_name,
                     calorie=meal.calorie,
@@ -97,3 +97,4 @@ class SQLAlchemyMealRepository(MealRepository):
 
                 session.add(meal_schema)
                 await session.commit()
+                return CreateMealStatus.SUCCESS

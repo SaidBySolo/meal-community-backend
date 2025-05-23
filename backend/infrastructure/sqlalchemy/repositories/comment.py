@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from backend.domain.entities.comment import Comment
+from backend.infrastructure.enum import CreatCommentStatus
 from backend.infrastructure.sqlalchemy import SQLAlchemy
 from backend.infrastructure.sqlalchemy.entities.comment import CommentSchema
 from backend.infrastructure.sqlalchemy.entities.user import UserSchema
@@ -11,18 +12,18 @@ class SQLAlchemyCommentRepository:
     def __init__(self, sa: SQLAlchemy):
         self.sa = sa
 
-    async def create_new_comment(
+    async def create_new(
         self,
         user_id: int,
         meal_id: int,
         comment: Comment,
-    ) -> None:
+    ) -> CreatCommentStatus:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 author = await session.get(UserSchema, user_id)
 
                 if not author:
-                    raise ValueError("Author not found")
+                    return CreatCommentStatus.AUTHOR_NOT_FOUND
 
                 comment_schema = CommentSchema(
                     content=comment.content,
@@ -35,6 +36,7 @@ class SQLAlchemyCommentRepository:
                 session.add(comment_schema)
 
                 await session.commit()
+                return CreatCommentStatus.SUCCESS
 
     async def create_reply(
         self,
@@ -42,7 +44,7 @@ class SQLAlchemyCommentRepository:
         meal_id: int,
         comment: Comment,
         parent_comment_id: int,
-    ) -> bool:
+    ) -> CreatCommentStatus:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 parent_comment = await session.get(
@@ -52,11 +54,11 @@ class SQLAlchemyCommentRepository:
                 )
 
                 if parent_comment is None:
-                    return False
+                    return CreatCommentStatus.PARENT_COMMENT_NOT_FOUND
 
                 author = await session.get(UserSchema, user_id)
-                if not author:
-                    raise ValueError("Author not found")
+                if author is None:
+                    return CreatCommentStatus.AUTHOR_NOT_FOUND
 
                 reply = CommentSchema(
                     content=comment.content,
@@ -73,9 +75,9 @@ class SQLAlchemyCommentRepository:
                 session.add(parent_comment)
 
                 await session.commit()
-                return True
+                return CreatCommentStatus.SUCCESS
 
-    async def get_comments_by_meal_id(self, meal_id: int) -> list[Comment]:
+    async def get_by_meal_id(self, meal_id: int) -> list[Comment]:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 result = await session.execute(
@@ -87,8 +89,28 @@ class SQLAlchemyCommentRepository:
 
                 return [comment.to_entity() for comment in comments]
 
-    async def delete_comment(self, comment_id: int) -> bool: ...
+    async def delete_comment(self, comment_id: int) -> bool:
+        async with self.sa.session_maker() as session:
+            async with session.begin():
+                comment = await session.get(CommentSchema, comment_id)
+
+                if not comment:
+                    return False
+
+                await session.delete(comment)
+                await session.commit()
+                return True
 
     async def update_comment_content(
         self, comment_id: int, new_content: str
-    ) -> Comment: ...
+    ) -> Comment | None:
+        async with self.sa.session_maker() as session:
+            async with session.begin():
+                comment = await session.get(CommentSchema, comment_id)
+
+                if not comment:
+                    return None
+
+                comment.content = new_content
+                await session.commit()
+                return comment.to_entity()

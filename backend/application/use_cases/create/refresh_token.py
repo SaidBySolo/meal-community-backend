@@ -15,6 +15,4 @@ class CreateRefreshTokenUseCase:
             user_id=user_id,
             value=token_urlsafe(32),
         )
-        return await self.valkey_refresh_token_repository.create_refresh_token(
-            refresh_token
-        )
+        return await self.valkey_refresh_token_repository.create(refresh_token)

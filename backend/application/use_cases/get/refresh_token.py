@@ -10,10 +10,8 @@ class GetRefreshTokenUseCase:
         self.valkey_refresh_token_repository = refresh_token_repository
 
     async def execute(self, refresh_token_value: str) -> RefreshToken:
-        nullable_refresh_token = (
-            await self.valkey_refresh_token_repository.get_refresh_token(
-                refresh_token_value
-            )
+        nullable_refresh_token = await self.valkey_refresh_token_repository.get(
+            refresh_token_value
         )
 
         if nullable_refresh_token:

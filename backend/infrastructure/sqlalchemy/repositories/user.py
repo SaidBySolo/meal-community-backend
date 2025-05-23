@@ -19,10 +19,8 @@ class SQLAlchemyUserRepository(UserRepository):
     async def create(self, user: User) -> User:
         async with self.sa.session_maker() as session:
             async with session.begin():
-                school_info_schema = (
-                    await self.school_info_repository.get_or_create_school_info(
-                        SchoolInfoSchema.from_entity(user.school_info)
-                    )
+                school_info_schema = await self.school_info_repository.get_or_create(
+                    SchoolInfoSchema.from_entity(user.school_info)
                 )
                 user_schema = UserSchema(
                     email=user.email,

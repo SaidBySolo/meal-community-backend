@@ -8,7 +8,7 @@ class SQLAlchemySchoolInfoRepository:
     def __init__(self, sa: SQLAlchemy) -> None:
         self.sa = sa
 
-    async def get_or_create_school_info(
+    async def get_or_create(
         self, school_info_schema: SchoolInfoSchema
     ) -> SchoolInfoSchema:
         async with self.sa.session_maker() as session:
@@ -31,7 +31,7 @@ class SQLAlchemySchoolInfoRepository:
 
         return school_info_schema
 
-    async def get_school_info_by_code(
+    async def get_by_code(
         self, edu_office_code: str, standard_school_code: str
     ) -> SchoolInfoSchema | None:
         async with self.sa.session_maker() as session:
@@ -39,11 +39,9 @@ class SQLAlchemySchoolInfoRepository:
                 select(SchoolInfoSchema).where(
                     and_(
                         SchoolInfoSchema.edu_office_code == edu_office_code,
-                        SchoolInfoSchema.standard_school_code
-                        == standard_school_code,
+                        SchoolInfoSchema.standard_school_code == standard_school_code,
                     )
                 )
             )
 
             return result.scalars().first()
-        

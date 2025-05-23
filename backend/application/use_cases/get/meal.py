@@ -16,7 +16,7 @@ class GetDailyMealUseCase:
     ) -> list[Meal]:
         current_datetime = to_date(current_date)
 
-        meals = await self.meal_repository.get_meal_by_code(
+        meals = await self.meal_repository.get_by_code(
             edu_office_code, standard_school_code, current_datetime
         )
 
@@ -41,7 +41,7 @@ class GetWeeklyMealUseCase:
 
         nullable_meals = await asyncio.gather(
             *[
-                self.meal_repository.get_meal_by_code(
+                self.meal_repository.get_by_code(
                     edu_office_code, standard_school_code, date
                 )
                 for date in dates

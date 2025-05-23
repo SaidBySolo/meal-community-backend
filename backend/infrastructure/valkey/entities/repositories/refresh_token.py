@@ -10,7 +10,7 @@ class ValkeyRefreshTokenRepository(RefreshTokenRepository):
         self.prefix = prefix
         super().__init__(expires_in)
 
-    async def create_refresh_token(self, refresh_token: RefreshToken) -> RefreshToken:
+    async def create(self, refresh_token: RefreshToken) -> RefreshToken:
         await self.valkey.setex(
             f"{self.prefix}:{refresh_token.value}",
             self.expires_in,
@@ -18,7 +18,7 @@ class ValkeyRefreshTokenRepository(RefreshTokenRepository):
         )
         return refresh_token
 
-    async def get_refresh_token(self, refresh_token_value: str) -> RefreshToken | None:
+    async def get(self, refresh_token_value: str) -> RefreshToken | None:
         user_id = await self.valkey.get(f"{self.prefix}:{refresh_token_value}")
         if user_id:
             return RefreshToken(
@@ -26,10 +26,10 @@ class ValkeyRefreshTokenRepository(RefreshTokenRepository):
                 user_id=int(user_id),
             )
 
-    async def delete_refresh_token(self, refresh_token_value: str) -> None:
+    async def delete(self, refresh_token_value: str) -> None:
         await self.valkey.delete(f"{self.prefix}:{ refresh_token_value}")
 
-    async def update_refresh_token_ttl(self, refresh_token_value: str) -> None:
+    async def update_ttl(self, refresh_token_value: str) -> None:
         await self.valkey.expire(
             f"{self.prefix}:{refresh_token_value}", self.expires_in
         )
