@@ -2,8 +2,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from backend.domain.entities.comment import Comment
-from backend.domain.repositories.comment import CommentRepository
 from backend.domain.enum import CreateCommentStatus
+from backend.domain.repositories.comment import CommentRepository
 from backend.infrastructure.sqlalchemy import SQLAlchemy
 from backend.infrastructure.sqlalchemy.entities.comment import CommentSchema
 from backend.infrastructure.sqlalchemy.entities.user import UserSchema
@@ -72,7 +72,6 @@ class SQLAlchemyCommentRepository(CommentRepository):
 
                 parent_comment.replies.append(reply)
 
-                session.add(reply)
                 session.add(parent_comment)
 
                 await session.commit()
@@ -102,9 +101,7 @@ class SQLAlchemyCommentRepository(CommentRepository):
                 await session.commit()
                 return True
 
-    async def update_content(
-        self, comment_id: int, new_content: str
-    ) -> Comment | None:
+    async def update_content(self, comment_id: int, content: str) -> Comment | None:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 comment = await session.get(CommentSchema, comment_id)
@@ -112,6 +109,6 @@ class SQLAlchemyCommentRepository(CommentRepository):
                 if not comment:
                     return None
 
-                comment.content = new_content
+                comment.content = content
                 await session.commit()
                 return comment.to_entity()
