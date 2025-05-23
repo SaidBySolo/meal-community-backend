@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import date
+from typing import Literal
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -15,7 +16,7 @@ class SQLAlchemyMealRepository(MealRepository):
         self.sa = sa
 
     async def get_meal_by_code(
-        self, edu_office_code: str, standard_school_code: str, date: datetime
+        self, edu_office_code: str, standard_school_code: str, date: date
     ) -> list[Meal]:
         async with self.sa.session_maker() as session:
             async with session.begin():
@@ -37,6 +38,35 @@ class SQLAlchemyMealRepository(MealRepository):
                     for school_info in result.scalars().all()
                     for meal in school_info.meals
                 ]
+
+    async def get_meal_id_by_code(
+        self,
+        edu_office_code: str,
+        standard_school_code: str,
+        date: date,
+        meal_name: Literal["조식", "중식", "석식"],
+    ) -> int | None:
+        async with self.sa.session_maker() as session:
+            async with session.begin():
+                result = await session.execute(
+                    select(SchoolInfoSchema).where(
+                        SchoolInfoSchema.edu_office_code == edu_office_code,
+                        SchoolInfoSchema.standard_school_code == standard_school_code,
+                    )
+                )
+                school_info = result.scalars().first()
+                assert school_info is not None
+                result = await session.execute(
+                    select(MealSchema).where(
+                        MealSchema.school_info_id == school_info.id,
+                        MealSchema.date == date,
+                        MealSchema.name == meal_name,
+                    )
+                )
+                meal = result.scalars().first()
+                if meal is None:
+                    return None
+                return meal.id
 
     async def create_meal_by_code(
         self,

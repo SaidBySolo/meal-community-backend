@@ -33,7 +33,7 @@ class SQLAlchemyUserRepository(UserRepository):
                     school_info_id=school_info_schema.id,
                     school_info=school_info_schema,
                 )
-                session.add(user)
+                session.add(user_schema)
 
             return user_schema.to_entity()
 

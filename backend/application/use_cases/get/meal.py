@@ -4,7 +4,7 @@ from datetime import timedelta
 from backend.application.exceptions import MealNotFound
 from backend.domain.entities.meal import Meal
 from backend.domain.repositories.meal import MealRepository
-from backend.infrastructure.datetime import to_datetime
+from backend.infrastructure.datetime import to_date
 
 
 class GetDailyMealUseCase:
@@ -14,7 +14,7 @@ class GetDailyMealUseCase:
     async def execute(
         self, edu_office_code: str, standard_school_code: str, current_date: str
     ) -> list[Meal]:
-        current_datetime = to_datetime(current_date)
+        current_datetime = to_date(current_date)
 
         meals = await self.meal_repository.get_meal_by_code(
             edu_office_code, standard_school_code, current_datetime
@@ -33,7 +33,7 @@ class GetWeeklyMealUseCase:
     async def execute(
         self, edu_office_code: str, standard_school_code: str, current_date: str
     ) -> list[list[Meal]]:
-        current_datetime = to_datetime(current_date)
+        current_datetime = to_date(current_date)
         dates = [
             current_datetime + timedelta(days=i)
             for i in range(-current_datetime.weekday(), 5 - current_datetime.weekday())

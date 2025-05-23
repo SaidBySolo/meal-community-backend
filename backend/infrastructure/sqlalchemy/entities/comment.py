@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from backend.domain.entities.comment import Comment
 from backend.infrastructure.sqlalchemy.base import Base
 from backend.infrastructure.sqlalchemy.entities.user import UserSchema
 from backend.infrastructure.sqlalchemy.mixin import Schema
@@ -32,4 +33,14 @@ class CommentSchema(Base, Schema):
         "UserSchema", uselist=False, lazy="selectin"
     )
 
-    created_at: Mapped[datetime] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
+
+    def to_entity(self) -> Comment:
+        comment = Comment(
+            content=self.content,
+            author=self.author.to_entity(),
+            parent_id=self.parent_id,
+            replies=[reply.to_entity() for reply in self.replies],
+        )
+        comment.created_at = self.created_at
+        return comment

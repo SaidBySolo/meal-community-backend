@@ -1,6 +1,7 @@
 from dataclasses import asdict, dataclass
 
 from backend.domain.entities.school_info import SchoolInfo
+from backend.domain.entities.user import User
 
 
 @dataclass
@@ -20,6 +21,16 @@ class CreateUserDTO:
 
     def to_dict(self):
         return asdict(self)
+
+    def to_entity(self):
+        return User(
+            name=self.name,
+            email=self.email,
+            password=self.password,
+            grade=self.grade,
+            room=self.room,
+            school_info=self.school_info,
+        )
 
 
 @dataclass
