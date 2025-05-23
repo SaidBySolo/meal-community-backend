@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import date
+from typing import Literal
 
 from neispy import Neispy
 from neispy.error import DataNotFound
@@ -6,6 +7,7 @@ from neispy.error import DataNotFound
 from backend.domain.entities.meal import Meal
 from backend.domain.repositories.meal import MealRepository
 from backend.infrastructure.datetime import to_yyyymmdd
+from backend.infrastructure.enum import CreateMealStatus
 from backend.infrastructure.neispy.entities.meal import NeispyMeal
 
 
@@ -13,8 +15,8 @@ class NeispyMealRepository(MealRepository):
     def __init__(self, neispy: Neispy):
         self.neispy = neispy
 
-    async def get_meal_by_code(
-        self, edu_office_code: str, standard_school_code: str, date: datetime
+    async def get_by_code(
+        self, edu_office_code: str, standard_school_code: str, date: date
     ) -> list[Meal]:
 
         try:
@@ -30,12 +32,19 @@ class NeispyMealRepository(MealRepository):
 
         return [NeispyMeal.from_neispy(meal) for meal in row]
 
-    async def create_meal_by_code(
+    async def get_id_by_code(
+        self,
+        edu_office_code: str,
+        standard_school_code: str,
+        date: date,
+        meal_name: Literal["조식", "중식", "석식"],
+    ) -> int | None:
+        raise NotImplementedError("Cannot get meal id with NeispyMealRepository.")
+
+    async def create_by_code(
         self,
         edu_office_code: str,
         standard_school_code: str,
         meal: Meal,
-    ) -> None:
-        raise NotImplementedError(
-            "Cannot create meal with NeispyMealRepository. Use SQLAlchemyMealRepository instead."
-        )
+    ) -> CreateMealStatus:
+        raise NotImplementedError("Cannot create meal with NeispyMealRepository.")

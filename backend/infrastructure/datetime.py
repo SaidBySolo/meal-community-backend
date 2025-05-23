@@ -15,7 +15,7 @@ def to_date(date: str) -> date:
     return datetime.strptime(date.strip(), "%Y%m%d").date()
 
 
-def to_yyyymmdd(datetime: datetime) -> str:
+def to_yyyymmdd(datetime: datetime | date) -> str:
     """
     datetime을 YYYYMMDD 형식의 문자열로 변환합니다.
     """

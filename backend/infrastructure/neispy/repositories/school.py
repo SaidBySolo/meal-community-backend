@@ -10,14 +10,14 @@ class NeispySchoolRepository(SchoolRepository):
     def __init__(self, neispy: Neispy):
         self.neispy = neispy
 
-    async def get_school_by_name(self, name: str) -> list[School]:
+    async def get_by_name(self, name: str) -> list[School]:
         try:
             result = await self.neispy.schoolInfo(SCHUL_NM=name)
         except DataNotFound:
             return []
         return [NeispySchool.from_neispy(school) for school in result.schoolInfo[1].row]
 
-    async def get_school_by_code(
+    async def get_by_code(
         self, edu_office_code: str, standard_school_code: str
     ) -> School | None:
         try:

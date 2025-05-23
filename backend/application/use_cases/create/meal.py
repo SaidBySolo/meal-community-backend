@@ -10,7 +10,7 @@ class CreateMealUseCase:
     async def execute(
         self, edu_office_code: str, standard_school_code: str, meal: Meal
     ) -> None:
-        result = await self.meal_repository.create(
+        result = await self.meal_repository.create_by_code(
             edu_office_code=edu_office_code,
             standard_school_code=standard_school_code,
             meal=meal,
