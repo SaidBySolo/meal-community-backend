@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from backend.domain.entities.meal import Meal
 from backend.domain.repositories.meal import MealRepository
-from backend.infrastructure.enum import CreateMealStatus
+from backend.domain.enum import CreateMealStatus
 from backend.infrastructure.sqlalchemy import SQLAlchemy
 from backend.infrastructure.sqlalchemy.entities.meal import MealSchema
 from backend.infrastructure.sqlalchemy.entities.school_info import SchoolInfoSchema

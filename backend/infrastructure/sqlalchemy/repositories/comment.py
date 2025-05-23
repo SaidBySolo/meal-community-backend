@@ -2,13 +2,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from backend.domain.entities.comment import Comment
-from backend.infrastructure.enum import CreatCommentStatus
+from backend.domain.repositories.comment import CommentRepository
+from backend.domain.enum import CreateCommentStatus
 from backend.infrastructure.sqlalchemy import SQLAlchemy
 from backend.infrastructure.sqlalchemy.entities.comment import CommentSchema
 from backend.infrastructure.sqlalchemy.entities.user import UserSchema
 
 
-class SQLAlchemyCommentRepository:
+class SQLAlchemyCommentRepository(CommentRepository):
     def __init__(self, sa: SQLAlchemy):
         self.sa = sa
 
@@ -17,13 +18,13 @@ class SQLAlchemyCommentRepository:
         user_id: int,
         meal_id: int,
         comment: Comment,
-    ) -> CreatCommentStatus:
+    ) -> CreateCommentStatus:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 author = await session.get(UserSchema, user_id)
 
                 if not author:
-                    return CreatCommentStatus.AUTHOR_NOT_FOUND
+                    return CreateCommentStatus.AUTHOR_NOT_FOUND
 
                 comment_schema = CommentSchema(
                     content=comment.content,
@@ -36,7 +37,7 @@ class SQLAlchemyCommentRepository:
                 session.add(comment_schema)
 
                 await session.commit()
-                return CreatCommentStatus.SUCCESS
+                return CreateCommentStatus.SUCCESS
 
     async def create_reply(
         self,
@@ -44,7 +45,7 @@ class SQLAlchemyCommentRepository:
         meal_id: int,
         comment: Comment,
         parent_comment_id: int,
-    ) -> CreatCommentStatus:
+    ) -> CreateCommentStatus:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 parent_comment = await session.get(
@@ -54,11 +55,11 @@ class SQLAlchemyCommentRepository:
                 )
 
                 if parent_comment is None:
-                    return CreatCommentStatus.PARENT_COMMENT_NOT_FOUND
+                    return CreateCommentStatus.PARENT_COMMENT_NOT_FOUND
 
                 author = await session.get(UserSchema, user_id)
                 if author is None:
-                    return CreatCommentStatus.AUTHOR_NOT_FOUND
+                    return CreateCommentStatus.AUTHOR_NOT_FOUND
 
                 reply = CommentSchema(
                     content=comment.content,
@@ -75,7 +76,7 @@ class SQLAlchemyCommentRepository:
                 session.add(parent_comment)
 
                 await session.commit()
-                return CreatCommentStatus.SUCCESS
+                return CreateCommentStatus.SUCCESS
 
     async def get_by_meal_id(self, meal_id: int) -> list[Comment]:
         async with self.sa.session_maker() as session:
@@ -89,7 +90,7 @@ class SQLAlchemyCommentRepository:
 
                 return [comment.to_entity() for comment in comments]
 
-    async def delete_comment(self, comment_id: int) -> bool:
+    async def delete(self, comment_id: int) -> bool:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 comment = await session.get(CommentSchema, comment_id)
@@ -101,7 +102,7 @@ class SQLAlchemyCommentRepository:
                 await session.commit()
                 return True
 
-    async def update_comment_content(
+    async def update_content(
         self, comment_id: int, new_content: str
     ) -> Comment | None:
         async with self.sa.session_maker() as session:

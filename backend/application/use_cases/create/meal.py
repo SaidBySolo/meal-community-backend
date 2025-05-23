@@ -1,6 +1,7 @@
+from backend.application.exceptions import SchoolNotFound
 from backend.domain.entities.meal import Meal
+from backend.domain.enum import CreateMealStatus
 from backend.domain.repositories.meal import MealRepository
-from backend.infrastructure.enum import CreateMealStatus
 
 
 class CreateMealUseCase:
@@ -17,7 +18,6 @@ class CreateMealUseCase:
         )
 
         if result == CreateMealStatus.SCHOOL_INFO_NOT_FOUND:
-            # TODO: handle error
-            raise ValueError("School info not found")
+            raise SchoolNotFound
 
         return

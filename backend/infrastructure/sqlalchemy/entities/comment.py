@@ -43,4 +43,5 @@ class CommentSchema(Base, Schema):
             replies=[reply.to_entity() for reply in self.replies],
         )
         comment.created_at = self.created_at
+        comment.id = self.id
         return comment

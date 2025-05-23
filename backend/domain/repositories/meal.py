@@ -3,7 +3,7 @@ from datetime import date
 from typing import Literal
 
 from backend.domain.entities.meal import Meal
-from backend.infrastructure.enum import CreateMealStatus
+from backend.domain.enum import CreateMealStatus
 
 
 class MealRepository(ABC):

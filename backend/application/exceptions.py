@@ -37,3 +37,8 @@ class SchoolNotFound(BackendException):
 class MealNotFound(BackendException):
     def __init__(self, message: str = "급식을 찾을 수 없습니다."):
         super().__init__(message)
+
+
+class CommentNotFound(BackendException):
+    def __init__(self, message: str = "댓글을 찾을 수 없습니다."):
+        super().__init__(message)

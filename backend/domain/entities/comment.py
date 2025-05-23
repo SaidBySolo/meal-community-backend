@@ -7,6 +7,8 @@ from backend.domain.entities.user import User
 
 @dataclass
 class Comment:
+    id: int = field(init=False)
+    """댓글 ID"""
     content: str
     """내용"""
     author: User

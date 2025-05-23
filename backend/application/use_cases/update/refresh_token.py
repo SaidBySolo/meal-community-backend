@@ -9,6 +9,4 @@ class UpdateRefreshTokenTTLUseCase:
         self.valkey_refresh_token_repository = refresh_token_repository
 
     async def execute(self, refresh_token: str) -> RefreshToken | None:
-        return await self.valkey_refresh_token_repository.update_refresh_token_ttl(
-            refresh_token
-        )
+        return await self.valkey_refresh_token_repository.update_ttl(refresh_token)
