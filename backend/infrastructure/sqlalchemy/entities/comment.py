@@ -13,10 +13,11 @@ from backend.infrastructure.sqlalchemy.mixin import Schema
 class CommentSchema(Base, Schema):
     __tablename__ = "comment"
 
-    content: Mapped[str]
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-
     meal_id: Mapped[int] = mapped_column(ForeignKey("meal.id"))
+
+    content: Mapped[str]
+
     parent_id: Mapped[int | None] = mapped_column(
         ForeignKey("comment.id"), nullable=True
     )
@@ -24,7 +25,11 @@ class CommentSchema(Base, Schema):
     replies: Mapped[list[CommentSchema]] = relationship(
         "CommentSchema",
         cascade="all, delete",
+        remote_side=[parent_id],
+        lazy="selectin",
     )
-    author: Mapped[UserSchema] = relationship("UserSchema")
+    author: Mapped[UserSchema] = relationship(
+        "UserSchema", uselist=False, lazy="selectin"
+    )
 
     created_at: Mapped[datetime] = mapped_column()

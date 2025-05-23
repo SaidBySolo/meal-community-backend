@@ -11,6 +11,10 @@ class CreateUserDTO:
     """이메일"""
     password: str
     """비밀번호"""
+    grade: int
+    """학년"""
+    room: int
+    """반"""
     school_info: SchoolInfo
     """학교 정보"""
 

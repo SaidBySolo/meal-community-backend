@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import date
 
 from backend.domain.utils import dict_factory
 
@@ -13,7 +13,7 @@ class Meal:
     calorie: str
     """칼로리"""
 
-    date: datetime
+    date: date
     """급식일자"""
 
     def to_dict(self):

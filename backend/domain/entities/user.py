@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 
 from backend.domain.entities.school_info import SchoolInfo
@@ -15,7 +15,11 @@ class User:
     """비밀번호"""
     school_info: SchoolInfo
     """학교 정보"""
-    created_at: datetime
+    grade: int
+    """학년"""
+    room: int
+    """반"""
+    created_at: datetime = field(init=False)
     """생성일"""
 
     def to_dict(self):

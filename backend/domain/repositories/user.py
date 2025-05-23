@@ -1,15 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from backend.domain.entities.school_info import SchoolInfo
 from backend.domain.entities.user import User
 
 
 class UserRepository(ABC):
     @abstractmethod
-    async def create(
-        self, name: str, email: str, password: str, school_info: SchoolInfo
-    ) -> User:
+    async def create(self, user: User) -> User:
         raise NotImplementedError
 
     @abstractmethod

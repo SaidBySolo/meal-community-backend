@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -26,7 +26,7 @@ class MealSchema(Base, Schema):
     calorie: Mapped[str] = mapped_column()
     """칼로리"""
 
-    date: Mapped[datetime] = mapped_column()
+    date: Mapped[date] = mapped_column()
     """급식일자"""
 
     comments: Mapped[list[CommentSchema]] = relationship(
