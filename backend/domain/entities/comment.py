@@ -1,8 +1,9 @@
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import List
 
 from backend.domain.entities.user import User
+from backend.domain.utils import dict_factory
 
 
 @dataclass
@@ -19,3 +20,6 @@ class Comment:
     """생성일"""
     parent_id: int | None = field(default=None)
     """부모 댓글 ID"""
+
+    def to_dict(self):
+        return asdict(self, dict_factory=dict_factory)

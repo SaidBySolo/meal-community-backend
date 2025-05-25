@@ -4,6 +4,7 @@ from sanic_ext import validate
 
 from backend.application.dtos.comment import CreateCommentDTO
 from backend.application.use_cases.create.comment import CreateCommentUseCase
+from backend.application.use_cases.get.comment import GetCommentByMealIdUseCase
 from backend.application.use_cases.get.user import GetUserByIDUseCase
 from backend.domain.entities.comment import Comment
 from backend.infrastructure.jwt import require_auth
@@ -35,3 +36,14 @@ async def write_comment(
     )
 
     return json({"message": "Comment created successfully"})
+
+
+@comment.get("/<meal_id:int>")
+@require_auth
+async def get_comments_by_meal_id(
+    request: BackendRequest,
+    meal_id: int,
+):
+    comments = await GetCommentByMealIdUseCase(request.app.ctx.comment_repository).execute(meal_id)
+    
+    return json([comment.to_dict() for comment in comments])
