@@ -89,7 +89,7 @@ class SQLAlchemyCommentRepository(CommentRepository):
                 return [
                     comment.to_entity()
                     for comment in comments
-                    if comment.parent_id is not None
+                    if comment.parent_id is None
                 ]
 
     async def delete(self, comment_id: int) -> bool:
