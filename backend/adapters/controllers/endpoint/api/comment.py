@@ -44,6 +44,8 @@ async def get_comments_by_meal_id(
     request: BackendRequest,
     meal_id: int,
 ):
-    comments = await GetCommentByMealIdUseCase(request.app.ctx.comment_repository).execute(meal_id)
-    
+    comments = await GetCommentByMealIdUseCase(
+        request.app.ctx.comment_repository
+    ).execute(meal_id)
+
     return json([comment.to_dict() for comment in comments])

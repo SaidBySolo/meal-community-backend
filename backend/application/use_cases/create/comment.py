@@ -18,12 +18,8 @@ class CreateReplyCommentUseCase:
     def __init__(self, comment_repository: CommentRepository):
         self.comment_repository = comment_repository
 
-    async def execute(
-        self, user_id: int, meal_id: int, comment: Comment, parent_comment_id: int
-    ) -> None:
-        status = await self.comment_repository.create_reply(
-            user_id, meal_id, comment, parent_comment_id
-        )
+    async def execute(self, user_id: int, meal_id: int, comment: Comment) -> None:
+        status = await self.comment_repository.create_reply(user_id, meal_id, comment)
         if CreateCommentStatus.AUTHOR_NOT_FOUND == status:
             raise UserNotFound
         if CreateCommentStatus.PARENT_COMMENT_NOT_FOUND == status:
@@ -43,7 +39,7 @@ class CreateCommentUseCase:
     ) -> None:
         if comment.parent_id:
             return await CreateReplyCommentUseCase(self.comment_repository).execute(
-                user_id, meal_id, comment, comment.parent_id
+                user_id, meal_id, comment
             )
 
         return await CreateNewCommentUseCase(self.comment_repository).execute(

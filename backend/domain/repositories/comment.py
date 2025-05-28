@@ -19,7 +19,6 @@ class CommentRepository(ABC):
         user_id: int,
         meal_id: int,
         comment: Comment,
-        parent_comment_id: int,
     ) -> CreateCommentStatus: ...
 
     @abstractmethod

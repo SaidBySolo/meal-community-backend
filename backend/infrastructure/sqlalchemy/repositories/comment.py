@@ -44,13 +44,12 @@ class SQLAlchemyCommentRepository(CommentRepository):
         user_id: int,
         meal_id: int,
         comment: Comment,
-        parent_comment_id: int,
     ) -> CreateCommentStatus:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 parent_comment = await session.get(
                     CommentSchema,
-                    parent_comment_id,
+                    comment.parent_id,
                     options=[selectinload(CommentSchema.replies)],
                 )
 
@@ -65,7 +64,7 @@ class SQLAlchemyCommentRepository(CommentRepository):
                     content=comment.content,
                     user_id=user_id,
                     meal_id=meal_id,
-                    parent_id=parent_comment_id,
+                    parent_id=parent_comment.id,
                     author=author,
                     replies=[],
                 )
@@ -87,7 +86,11 @@ class SQLAlchemyCommentRepository(CommentRepository):
                 )
                 comments = result.scalars().all()
 
-                return [comment.to_entity() for comment in comments]
+                return [
+                    comment.to_entity()
+                    for comment in comments
+                    if comment.parent_id is not None
+                ]
 
     async def delete(self, comment_id: int) -> bool:
         async with self.sa.session_maker() as session:
