@@ -51,4 +51,4 @@ async def get_comments_by_meal_id(
 
     result = [GetCommentDTO.from_entity(comment) for comment in comments]
 
-    return json(result)
+    return json({"results": [comment.to_dict() for comment in result]})

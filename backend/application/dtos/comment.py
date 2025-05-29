@@ -28,18 +28,18 @@ class GetCommentDTO:
     """대댓글"""
     created_at: datetime
     """생성일"""
-    parent_id: int
+    parent_id: int | None
     """부모 댓글 ID"""
 
     def to_dict(self):
         return asdict(self, dict_factory=dict_factory)
 
     @classmethod
-    def from_entity(cls, entity: Comment):
+    def from_entity(cls, entity: Comment) -> "GetCommentDTO":
         return cls(
             id=entity.id,
             content=entity.content,
-            author=PrivateUserDTO.from_entity(entity.user),
+            author=PrivateUserDTO.from_entity(entity.author),
             replies=[cls.from_entity(reply) for reply in entity.replies],
             created_at=entity.created_at,
             parent_id=entity.parent_id,
