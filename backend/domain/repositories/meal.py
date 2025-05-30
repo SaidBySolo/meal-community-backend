@@ -13,12 +13,17 @@ class MealRepository(ABC):
     ) -> list[Meal]: ...
 
     @abstractmethod
+    async def get_with_id_by_code(
+        self, edu_office_code: str, standard_school_code: str, date: date
+    ) -> list[tuple[int, Meal]]: ...
+
+    @abstractmethod
     async def create_by_code(
         self,
         edu_office_code: str,
         standard_school_code: str,
         meal: Meal,
-    ) -> CreateMealStatus: ...
+    ) -> CreateMealStatus | int: ...
 
     @abstractmethod
     async def get_id_by_code(

@@ -32,6 +32,11 @@ class NeispyMealRepository(MealRepository):
 
         return [NeispyMeal.from_neispy(meal) for meal in row]
 
+    async def get_with_id_by_code(
+        self, edu_office_code: str, standard_school_code: str, date: date
+    ) -> list[tuple[int, Meal]]:
+        raise NotImplementedError("Cannot get meal with id with NeispyMealRepository.")
+
     async def get_id_by_code(
         self,
         edu_office_code: str,

@@ -72,7 +72,7 @@ class SQLAlchemyMealRepository(MealRepository):
         edu_office_code: str,
         standard_school_code: str,
         meal: Meal,
-    ) -> CreateMealStatus:
+    ) -> CreateMealStatus | int:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 result = await session.execute(
@@ -97,4 +97,4 @@ class SQLAlchemyMealRepository(MealRepository):
 
                 session.add(meal_schema)
                 await session.commit()
-                return CreateMealStatus.SUCCESS
+                return meal_schema.id

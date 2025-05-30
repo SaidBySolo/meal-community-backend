@@ -10,7 +10,7 @@ class CreateMealUseCase:
 
     async def execute(
         self, edu_office_code: str, standard_school_code: str, meal: Meal
-    ) -> None:
+    ) -> int:
         result = await self.meal_repository.create_by_code(
             edu_office_code=edu_office_code,
             standard_school_code=standard_school_code,
@@ -20,4 +20,4 @@ class CreateMealUseCase:
         if result == CreateMealStatus.SCHOOL_INFO_NOT_FOUND:
             raise SchoolNotFound
 
-        return
+        return result

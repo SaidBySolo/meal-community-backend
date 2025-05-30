@@ -26,6 +26,25 @@ class GetDailyMealUseCase:
         return meals
 
 
+class GetDailyMealWithIDUseCase:
+    def __init__(self, meal_repository: MealRepository):
+        self.meal_repository = meal_repository
+
+    async def execute(
+        self, edu_office_code: str, standard_school_code: str, current_date: str
+    ) -> list[tuple[int, Meal]]:
+        current_datetime = to_date(current_date)
+
+        meals_with_id = await self.meal_repository.get_with_id_by_code(
+            edu_office_code, standard_school_code, current_datetime
+        )
+
+        if not meals_with_id:
+            raise MealNotFound
+
+        return meals_with_id
+
+
 class GetWeeklyMealUseCase:
     def __init__(self, meal_repository: MealRepository):
         self.meal_repository = meal_repository
