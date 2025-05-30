@@ -16,9 +16,9 @@ class SQLAlchemyMealRepository(MealRepository):
     def __init__(self, sa: SQLAlchemy):
         self.sa = sa
 
-    async def get_by_code(
+    async def _get_schema_by_code(
         self, edu_office_code: str, standard_school_code: str, date: date
-    ) -> list[Meal]:
+    ) -> list[MealSchema]:
         async with self.sa.session_maker() as session:
             async with session.begin():
                 result = await session.execute(
@@ -35,10 +35,28 @@ class SQLAlchemyMealRepository(MealRepository):
                 )
 
                 return [
-                    meal.to_entity()
+                    meal
                     for school_info in result.scalars().all()
                     for meal in school_info.meals
                 ]
+
+    async def get_by_code(
+        self, edu_office_code: str, standard_school_code: str, date: date
+    ) -> list[Meal]:
+        meal_schemas = await self._get_schema_by_code(
+            edu_office_code, standard_school_code, date
+        )
+
+        return [schema.to_entity() for schema in meal_schemas]
+
+    async def get_with_id_by_code(
+        self, edu_office_code: str, standard_school_code: str, date: date
+    ) -> list[tuple[int, Meal]]:
+        meal_schemas = await self._get_schema_by_code(
+            edu_office_code, standard_school_code, date
+        )
+
+        return [(schema.id, schema.to_entity()) for schema in meal_schemas]
 
     async def get_id_by_code(
         self,
