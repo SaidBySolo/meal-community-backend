@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 from typing import Any, Callable
 
+from google.genai.client import AsyncClient
 from neispy import Neispy
 from sanic.app import Sanic
 from sanic.request import Request
@@ -24,6 +25,7 @@ class BackendContext(SimpleNamespace):
     sa: SQLAlchemy
     valkey: Valkey
     neispy: Neispy
+    gemini: AsyncClient
     user_repository: SQLAlchemyUserRepository
     comment_repository: SQLAlchemyCommentRepository
     refresh_token_repository: ValkeyRefreshTokenRepository

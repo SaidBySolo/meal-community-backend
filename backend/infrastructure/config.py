@@ -42,6 +42,7 @@ class BackendConfig(Config):
                 "ACCESS_TOKEN_EXP": 900,
                 "REFRESH_TOKEN_EXP": 604800,
                 "NEIS_API_KEY": "",
+                "GEMINI_API_KEY": "",
                 # Sanic config
                 "HOST": "127.0.0.1",
                 "PORT": 8000,
@@ -74,6 +75,7 @@ class BackendConfig(Config):
     ACCESS_TOKEN_EXP: int
     REFRESH_TOKEN_EXP: int
     NEIS_API_KEY: str
+    GEMINI_API_KEY: str
     # Sanic config
     DEBUG: bool
     HOST: str

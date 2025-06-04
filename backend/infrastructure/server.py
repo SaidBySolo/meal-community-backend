@@ -1,6 +1,7 @@
 from asyncio import AbstractEventLoop
 from functools import partial
 
+from google import genai
 from neispy import Neispy
 from valkey.asyncio import Valkey
 
@@ -27,6 +28,7 @@ async def startup(app: Backend, loop: AbstractEventLoop) -> None:
     app.ctx.sa = await SQLAlchemy.create(app.config.DB_URL)
     app.ctx.valkey = Valkey.from_url(app.config.VALKEY_URL)
     app.ctx.neispy = Neispy(app.config.NEIS_API_KEY)
+    app.ctx.gemini = genai.Client(api_key=app.config.GEMINI_API_KEY).aio
 
     # Initialize Repositories
     app.ctx.user_repository = SQLAlchemyUserRepository(app.ctx.sa)
