@@ -11,6 +11,11 @@ class MealRepository(ABC):
     async def get_by_code(
         self, edu_office_code: str, standard_school_code: str, date: date
     ) -> list[Meal]: ...
+    
+    @abstractmethod
+    async def get_by_id(
+        self, meal_id: int
+    ) -> Meal | None: ...
 
     @abstractmethod
     async def get_with_id_by_code(

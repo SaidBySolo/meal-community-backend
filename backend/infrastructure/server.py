@@ -7,6 +7,7 @@ from valkey.asyncio import Valkey
 from backend.adapters.controllers.endpoint import endpoint
 from backend.infrastructure.config import BackendConfig
 from backend.infrastructure.error import ErrorHandler
+from backend.infrastructure.genai.repositories.calorie import GeminiCalorieRepository
 from backend.infrastructure.jwt import jwt_decode, jwt_encode
 from backend.infrastructure.neispy.repositories.meal import NeispyMealRepository
 from backend.infrastructure.neispy.repositories.school import NeispySchoolRepository
@@ -20,6 +21,7 @@ from backend.infrastructure.sqlalchemy.repositories.user import SQLAlchemyUserRe
 from backend.infrastructure.valkey.entities.repositories.refresh_token import (
     ValkeyRefreshTokenRepository,
 )
+from google.genai import Client
 
 
 async def startup(app: Backend, loop: AbstractEventLoop) -> None:
@@ -27,6 +29,7 @@ async def startup(app: Backend, loop: AbstractEventLoop) -> None:
     app.ctx.sa = await SQLAlchemy.create(app.config.DB_URL)
     app.ctx.valkey = Valkey.from_url(app.config.VALKEY_URL)
     app.ctx.neispy = Neispy(app.config.NEIS_API_KEY)
+    app.ctx.gemini = Client(api_key=app.config.GEMINI_API_KEY).aio
 
     # Initialize Repositories
     app.ctx.user_repository = SQLAlchemyUserRepository(app.ctx.sa)
@@ -37,6 +40,7 @@ async def startup(app: Backend, loop: AbstractEventLoop) -> None:
     app.ctx.neispy_school_repository = NeispySchoolRepository(app.ctx.neispy)
     app.ctx.neispy_meal_repository = NeispyMealRepository(app.ctx.neispy)
     app.ctx.sa_meal_repository = SQLAlchemyMealRepository(app.ctx.sa)
+    app.ctx.calorie_repository = GeminiCalorieRepository(app.ctx.gemini)
 
     # Initialize External Services
     app.ctx.jwt_encode = partial(
@@ -47,7 +51,6 @@ async def startup(app: Backend, loop: AbstractEventLoop) -> None:
 
 async def closeup(app: Backend, loop: AbstractEventLoop) -> None:
     await app.ctx.sa.engine.dispose()
-
 
 def create_app(config: BackendConfig) -> Backend:
     backend = Backend("backend", error_handler=ErrorHandler())

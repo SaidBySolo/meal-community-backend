@@ -25,6 +25,15 @@ class GetDailyMealUseCase:
 
         return meals
 
+class GetDailyMealByIDUseCase:
+    def __init__(self, meal_repository: MealRepository):
+        self.meal_repository = meal_repository
+
+    async def execute(self, meal_id: int) -> Meal:
+        meal = await self.meal_repository.get_by_id(meal_id)
+        if not meal:
+            raise MealNotFound
+        return meal
 
 class GetDailyMealWithIDUseCase:
     def __init__(self, meal_repository: MealRepository):

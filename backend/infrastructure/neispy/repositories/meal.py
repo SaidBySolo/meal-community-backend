@@ -53,3 +53,6 @@ class NeispyMealRepository(MealRepository):
         meal: Meal,
     ) -> CreateMealStatus:
         raise NotImplementedError("Cannot create meal with NeispyMealRepository.")
+    
+    async def get_by_id(self, meal_id: int) -> Meal:
+        raise NotImplementedError("Cannot get meal by id with NeispyMealRepository.")

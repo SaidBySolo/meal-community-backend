@@ -48,6 +48,15 @@ class SQLAlchemyMealRepository(MealRepository):
         )
 
         return [schema.to_entity() for schema in meal_schemas]
+    
+    async def get_by_id(self, meal_id: int) -> Meal | None:
+        async with self.sa.session_maker() as session:
+            async with session.begin():
+                result = await session.execute(
+                    select(MealSchema).where(MealSchema.id == meal_id)
+                )
+                meal_schema = result.scalar_one_or_none()
+                return meal_schema.to_entity() if meal_schema else None
 
     async def get_with_id_by_code(
         self, edu_office_code: str, standard_school_code: str, date: date

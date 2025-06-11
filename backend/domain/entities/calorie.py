@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 
 @dataclass
@@ -12,4 +12,5 @@ class Calorie:
     meals: list[Menu]
     total_calories: int | None = None
 
-    
+    def to_dict(self):
+        return asdict(self)

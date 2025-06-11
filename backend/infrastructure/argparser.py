@@ -97,6 +97,13 @@ def parse_args(argv: list[str]) -> Namespace:
     )
 
     config.add_argument(
+        "--gemini-api-key",
+        type=str,
+        default="",
+        help="The API key for the Gemini API (default: '')",
+    )
+
+    config.add_argument(
         "--forwarded-secret",
         type=str,
         default="",
