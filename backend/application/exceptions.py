@@ -42,3 +42,8 @@ class MealNotFound(BackendException):
 class CommentNotFound(BackendException):
     def __init__(self, message: str = "댓글을 찾을 수 없습니다."):
         super().__init__(message)
+
+
+class CalorieNotFound(BackendException):
+    def __init__(self, message: str = "칼로리 정보를 찾을 수 없습니다."):
+        super().__init__(message)
